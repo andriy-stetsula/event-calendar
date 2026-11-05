@@ -1,32 +1,45 @@
-# React + TypeScript + Vite
+# Event Calendar
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Календар з плануванням подій, зроблений на React + TypeScript.
 
-Currently, two official plugins are available:
+**Демо:** https://andriy-stetsula.github.io/event-calendar/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Можливості
 
-## React Compiler
+- Перегляд місяця у вигляді сітки (тиждень починається з понеділка)
+- Перемикання між місяцями та роками
+- Кнопка "Сьогодні" для повернення до поточної дати
+- Підсвітка поточного дня
+- Створення, редагування і видалення подій через модальне вікно
+- Кольорові мітки для подій
+- Керування станом подій через Redux Toolkit
+- Збереження подій у localStorage
+- Адаптивний дизайн
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Технології
 
-## Expanding the Oxlint configuration
+- React 19
+- TypeScript
+- Vite
+- Redux Toolkit
+- date-fns
+- CSS
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Запуск локально
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+git clone https://github.com/andriy-stetsula/event-calendar.git
+cd event-calendar
+npm install
+npm start
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Застосунок відкриється на `http://localhost:5173`.
+
+## Скрипти
+
+- `npm start` / `npm run dev`: запуск dev-сервера
+- `npm run build`: збірка для production
+- `npm run preview`: перегляд збірки
+- `npm run lint`: перевірка коду
+- `npm run deploy`: деплой на GitHub Pages
