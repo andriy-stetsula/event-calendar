@@ -18,7 +18,7 @@ const WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
 const COLORS = ["blue", "green", "red", "orange", "purple"];
 
 export const Calendar = () => {
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const days = eachDayOfInterval({
