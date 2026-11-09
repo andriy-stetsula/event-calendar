@@ -40,6 +40,8 @@ export const Calendar = () => {
 
   const MAX_VISIBLE = 2;
 
+  const isFormValid = title.trim() !== "" && date !== "" && time !== "";
+
   const getDayEvents = (day: Date) => {
     return events
       .filter((ev) => ev.date === format(day, "yyyy-MM-dd"))
@@ -290,7 +292,11 @@ export const Calendar = () => {
               >
                 Скасувати
               </button>
-              <button type="submit" className="btn btn--primary">
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={!isFormValid}
+              >
                 Зберегти
               </button>
             </div>
