@@ -10,7 +10,16 @@ type CalendarEvent = {
   description: string;
 }
 
-const initialState: CalendarEvent[] = []
+const loadEvents = (): CalendarEvent[] => {
+    try {
+        const saved = localStorage.getItem("events")
+        return saved ? JSON.parse(saved) : []
+    } catch {
+        return []
+    }
+}
+
+const initialState: CalendarEvent[] = loadEvents()
 
 const eventsSlice = createSlice({
     name:'events',

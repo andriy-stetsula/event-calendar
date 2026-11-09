@@ -2,7 +2,7 @@ import { useState } from "react";
 import { uk } from "date-fns/locale";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../store/store.ts";
-import { addEvent } from "../store/eventsSlice.ts";
+import { addEvent, removeEvent } from "../store/eventsSlice.ts";
 import {
   startOfMonth,
   endOfMonth,
@@ -28,6 +28,7 @@ export const Calendar = () => {
   const [time, setTime] = useState("");
   const [color, setColor] = useState("blue");
   const [description, setDescription] = useState("");
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
   const days = eachDayOfInterval({
     start: startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 1 }),
@@ -36,6 +37,14 @@ export const Calendar = () => {
 
   const events = useSelector((state: RootState) => state.events);
   const dispatch = useDispatch<AppDispatch>();
+
+  const MAX_VISIBLE = 2;
+
+  const getDayEvents = (day: Date) => {
+    return events
+      .filter((ev) => ev.date === format(day, "yyyy-MM-dd"))
+      .sort((a, b) => a.time.localeCompare(b.time));
+  };
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -103,28 +112,103 @@ export const Calendar = () => {
       </div>
 
       <div className="calendar__grid">
-        {days.map((day) => (
-          <div
-            key={day.toISOString()}
-            className={`day ${!isSameMonth(day, currentMonth) ? "day--outside" : ""} ${isToday(day) ? "day--today" : ""}`}
-          >
-            <span className="day__number">
-              {format(day, "d")}
+        {days.map((day) => {
+          const dayEvents = getDayEvents(day);
+          const hidden = dayEvents.length - MAX_VISIBLE;
+
+          return (
+            <div
+              key={day.toISOString()}
+              className={`day ${!isSameMonth(day, currentMonth) ? "day--outside" : ""} ${isToday(day) ? "day--today" : ""}`}
+              onClick={() => dayEvents.length > 0 && setSelectedDay(day)}
+            >
+              <span className="day__number">{format(day, "d")}</span>
 
               <ul className="day__events">
-                {events
-                  .filter((ev) => ev.date === format(day, "yyyy-MM-dd"))
-                  .map((ev) => (
-                    <li key={ev.id} className={`event event--${ev.color}`}>
-                      <span className="event__time">{ev.time}</span>
-                      <span className="event__title">{ev.title}</span>
-                    </li>
-                  ))}
+                {dayEvents.slice(0, MAX_VISIBLE).map((ev) => (
+                  <li key={ev.id} className={`event event--${ev.color}`}>
+                    <span className="event__time">{ev.time}</span>
+                    <span className="event__title">{ev.title}</span>
+                    <button
+                      type="button"
+                      className="event__delete"
+                      onClick={(event) => {
+                        dispatch(removeEvent(ev.id));
+                        event.stopPropagation();
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
               </ul>
-            </span>
-          </div>
-        ))}
+              {hidden > 0 && (
+                <button
+                  className="day__more"
+                  onClick={(event) => {
+                    setSelectedDay(day);
+                    event.stopPropagation();
+                  }}
+                >
+                  + ще {hidden}
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
+
+      {selectedDay && (
+        <div className="modal-overlay" onClick={() => setSelectedDay(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal__header">
+              <h2 className="modal__title">
+                {format(selectedDay, "d MMMM yyyy", { locale: uk })}
+              </h2>
+              <button
+                type="button"
+                className="btn btn--icon"
+                aria-label="Закрити"
+                onClick={() => setSelectedDay(null)}
+              >
+                ✕
+              </button>
+            </div>
+            <ul className="day-modal__list">
+              {getDayEvents(selectedDay).map((ev) => (
+                <li
+                  key={ev.id}
+                  className={`day-modal__item day-modal__item--${ev.color}`}
+                >
+                  <div className="day-modal__top">
+                    <span className="day-modal__dot"></span>
+                    <span className="day-modal__name">{ev.title}</span>
+                    <span className="day-modal__time">{ev.time}</span>
+                    <button
+                      type="button"
+                      className="day-modal__delete"
+                      aria-label="Видалити подію"
+                      onClick={() => dispatch(removeEvent(ev.id))}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  {ev.description && (
+                    <p className="day-modal__desc">{ev.description}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              className="btn btn--ghost"
+              onClick={() => setSelectedDay(null)}
+            >
+              Закрити
+            </button>
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="modal-overlay">

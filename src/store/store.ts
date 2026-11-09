@@ -7,5 +7,9 @@ export const store = configureStore({
     }
 })
 
+store.subscribe(() => {
+    localStorage.setItem("events", JSON.stringify(store.getState().events))
+})
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
